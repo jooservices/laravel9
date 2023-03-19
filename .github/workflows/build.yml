@@ -81,7 +81,7 @@ jobs:
           ./vendor/bin/phpunit --testsuite=${{ matrix.test }} --coverage-clover coverage-${{ matrix.test }}.xml
 
       - name: Coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: success()
         with:
           name: coverage-reports
@@ -96,7 +96,7 @@ jobs:
 
     steps:
       - name: Download build from artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         if: success()
         with:
           name: coverage-reports
