@@ -28,5 +28,5 @@ Route::prefix('v1/users')
         Route::post('/{user}/follow', 'follow')->name('follow');
         Route::post('/{user}/unfollow', 'unfollow')->name('unfollow');
         Route::get('/{user}/followings', 'follows')->name('follows');
-        Route::get('/{user}/followers', 'followers')->name('followers');
+        //Route::get('/{user}/followers', 'followers')->name('followers');
     });

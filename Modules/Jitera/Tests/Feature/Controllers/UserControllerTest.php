@@ -10,14 +10,22 @@ use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
+    private User $followedUser;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->followedUser = User::factory()->create();
+    }
+
     public function testFollow()
     {
         Event::fake([FollowedUser::class]);
 
-        $user = User::factory()->create();
         $followerUser = User::factory()->create();
         $this->post(
-            '/api/v1/users/'.$user->id.'/follow',
+            '/api/v1/users/'.$this->followedUser->id.'/follow',
             [
                 'follower_user_id' => $followerUser->id,
             ]
@@ -25,18 +33,18 @@ class UserControllerTest extends TestCase
             'status' => true,
             'data' => [
                 'properties' => [
-                    'id' => $user->id,
+                    'id' => $this->followedUser->id,
                 ],
             ],
         ]);
 
         $this->assertDatabaseHas('follows_tables', [
             'follower_id' => $followerUser->id,
-            'followed_id' => $user->id,
+            'followed_id' => $this->followedUser->id,
         ]);
 
-        Event::assertDispatched(FollowedUser::class, function ($event) use ($user, $followerUser) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $user->id;
+        Event::assertDispatched(FollowedUser::class, function ($event) use ($followerUser) {
+            return $event->followerUser->is($followerUser) && $event->followedUser->is($this->followedUser);
         });
     }
 
@@ -44,10 +52,9 @@ class UserControllerTest extends TestCase
     {
         Event::fake([FollowedUser::class, UnfollowedUser::class]);
 
-        $user = User::factory()->create();
         $followerUser = User::factory()->create();
         $this->post(
-            '/api/v1/users/'.$user->id.'/follow',
+            '/api/v1/users/'.$this->followedUser->id.'/follow',
             [
                 'follower_user_id' => $followerUser->id,
             ]
@@ -55,22 +62,22 @@ class UserControllerTest extends TestCase
             'status' => true,
             'data' => [
                 'properties' => [
-                    'id' => $user->id,
+                    'id' => $this->followedUser->id,
                 ],
             ],
         ]);
 
         $this->assertDatabaseHas('follows_tables', [
             'follower_id' => $followerUser->id,
-            'followed_id' => $user->id,
+            'followed_id' => $this->followedUser->id,
         ]);
 
-        Event::assertDispatched(FollowedUser::class, function ($event) use ($user, $followerUser) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $user->id;
+        Event::assertDispatched(FollowedUser::class, function ($event) use ($followerUser) {
+            return $event->followerUser->is($followerUser) && $event->followedUser->is($this->followedUser);
         });
 
         $this->post(
-            '/api/v1/users/'.$user->id.'/unfollow',
+            '/api/v1/users/'.$this->followedUser->id.'/unfollow',
             [
                 'follower_user_id' => $followerUser->id,
             ]
@@ -78,27 +85,26 @@ class UserControllerTest extends TestCase
             'status' => true,
             'data' => [
                 'properties' => [
-                    'id' => $user->id,
+                    'id' => $this->followedUser->id,
                 ],
             ],
         ]);
 
         $this->assertDatabaseMissing('follows_tables', [
             'follower_id' => $followerUser->id,
-            'followed_id' => $user->id,
+            'followed_id' => $this->followedUser->id,
         ]);
 
-        Event::assertDispatched(UnfollowedUser::class, function ($event) use ($user, $followerUser) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $user->id;
+        Event::assertDispatched(UnfollowedUser::class, function ($event) use ($followerUser) {
+            return $event->followerUser->is($followerUser) && $event->followedUser->is($this->followedUser);
         });
     }
 
     public function testGetFollows()
     {
-        $user = User::factory()->create();
         $followerUser = User::factory()->create();
         $this->post(
-            '/api/v1/users/'.$user->id.'/follow',
+            '/api/v1/users/'.$this->followedUser->id.'/follow',
             [
                 'follower_user_id' => $followerUser->id,
             ]
@@ -106,7 +112,7 @@ class UserControllerTest extends TestCase
             'status' => true,
             'data' => [
                 'properties' => [
-                    'id' => $user->id,
+                    'id' => $this->followedUser->id,
                 ],
             ],
         ]);
@@ -114,10 +120,10 @@ class UserControllerTest extends TestCase
         $this->get(
             '/api/v1/users/'.$followerUser->id.'/followings',
             [
-                'name' => $user->name,
+                'name' => $this->followedUser->name,
             ]
         )
             ->assertStatus(200)
-            ->assertJsonPath('data.0.properties.id', $user->id);
+            ->assertJsonPath('data.0.properties.id', $this->followedUser->id);
     }
 }

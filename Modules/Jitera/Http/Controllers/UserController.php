@@ -33,7 +33,7 @@ class UserController extends ApiController
     public function follows(GetFollowerUsers $request, User $user, UserService $userService)
     {
         return $this->respondOk(
-            UserResource::collection($userService->searchFollowers($user, $request->input('name', '')))
+            UserResource::collection($userService->getFollowers($user, $request->input('name')))
         );
     }
 }

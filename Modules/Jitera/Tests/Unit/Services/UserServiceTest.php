@@ -11,71 +11,92 @@ use Tests\TestCase;
 
 class UserServiceTest extends TestCase
 {
+    private User $follower;
+    private UserService $service;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->follower = User::factory()->create();
+        $this->service = app(UserService::class);
+    }
+
     public function testFollowUser()
     {
         Event::fake([FollowedUser::class]);
-        $service = app(UserService::class);
 
-        $followerUser = User::factory()->create();
         $followedUser1 = User::factory()->create();
         $followedUser2 = User::factory()->create();
 
-        $service->follow($followerUser, $followedUser1);
-        $service->follow($followerUser, $followedUser2);
+        $this->service->follow($this->follower, $followedUser1);
+        $this->service->follow($this->follower, $followedUser2);
 
         $this->assertDatabaseHas('follows_tables', [
-            'follower_id' => $followerUser->id,
+            'follower_id' => $this->follower->id,
             'followed_id' => $followedUser1->id,
         ]);
 
         $this->assertDatabaseHas('follows_tables', [
-            'follower_id' => $followerUser->id,
+            'follower_id' => $this->follower->id,
             'followed_id' => $followedUser2->id,
         ]);
 
-        Event::assertDispatched(FollowedUser::class, function ($event) use ($followerUser, $followedUser1) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $followedUser1->id;
+        Event::assertDispatched(FollowedUser::class, function ($event) use ($followedUser1) {
+            return $event->followerUser->is($this->follower) && $event->followedUser->is($followedUser1);
         });
 
-        Event::assertDispatched(FollowedUser::class, function ($event) use ($followerUser, $followedUser2) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $followedUser2->id;
+        Event::assertDispatched(FollowedUser::class, function ($event) use ($followedUser2) {
+            return $event->followerUser->is($this->follower) && $event->followedUser->is($followedUser2);
         });
     }
 
     public function testUnfollowUser()
     {
         Event::fake([FollowedUser::class, UnfollowedUser::class]);
-        $service = app(UserService::class);
 
-        $followerUser = User::factory()->create();
         $followedUser = User::factory()->create();
 
-        $service->follow($followerUser, $followedUser);
-        $service->unfollow($followerUser, $followedUser);
+        $this->service->follow($this->follower, $followedUser);
+        $this->service->unfollow($this->follower, $followedUser);
 
         $this->assertDatabaseMissing('follows_tables', [
-            'follower_id' => $followerUser->id,
+            'follower_id' => $this->follower->id,
             'followed_id' => $followedUser->id,
         ]);
 
-        Event::assertDispatched(FollowedUser::class, function ($event) use ($followerUser, $followedUser) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $followedUser->id;
+        Event::assertDispatched(FollowedUser::class, function ($event) use ($followedUser) {
+            return $event->followerUser->is($this->follower) && $event->followedUser->is($followedUser);
         });
 
-        Event::assertDispatched(UnfollowedUser::class, function ($event) use ($followerUser, $followedUser) {
-            return $event->followerUser->id === $followerUser->id && $event->followedUser->id === $followedUser->id;
+        Event::assertDispatched(UnfollowedUser::class, function ($event) use ($followedUser) {
+            return $event->followerUser->is($this->follower) && $event->followedUser->is($followedUser);
         });
     }
 
     public function testSearchFollowers()
     {
-        $service = app(UserService::class);
+        $followedUser1 = User::factory()->create(['name' => $this->faker->name]);
+        $followedUser2 = User::factory()->create(['name' => $this->faker->name]);
 
-        $followerUser = User::factory()->create();
-        $followedUser = User::factory()->create(['name' => 'John Doe']);
+        $this->service->follow($this->follower, $followedUser1);
+        $this->service->follow($this->follower, $followedUser2);
 
-        $service->follow($followerUser, $followedUser);
+        $followers = $this->service->getFollowers($this->follower);
+        $this->assertCount(2, $followers);
+    }
 
-        $this->assertTrue($service->searchFollowers($followerUser, 'John')->first()->is($followedUser));
+    public function testSearchFollowersByName()
+    {
+        $followedUser1 = User::factory()->create(['name' => $this->faker->name]);
+        $followedUser2 = User::factory()->create(['name' => 'John Doe']);
+
+        $this->service->follow($this->follower, $followedUser1);
+        $this->service->follow($this->follower, $followedUser2);
+
+        $followers = $this->service->getFollowers($this->follower, 'John');
+        $this->assertCount(1, $followers);
+
+        $this->assertTrue($followers->first()->is($followedUser2));
     }
 }

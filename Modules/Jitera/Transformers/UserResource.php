@@ -3,27 +3,27 @@
 namespace Modules\Jitera\Transformers;
 
 use App\Models\User;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Core\Transformers\AbstractBaseResource;
 
-class UserResource extends JsonResource
+class UserResource extends AbstractBaseResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request
-     * @return array
-     */
-    public function toArray($request)
+    protected function getType(): string
+    {
+        return User::class;
+    }
+
+    protected function getProperties(): array
     {
         return [
-            'type'=> User::class,
-            'properties' => [
-                'id' => $this->id,
-                'name' => $this->name,
-            ],
-            'links' => [
-                'self' => route('jitera.users.show', $this),
-            ],
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
+
+    protected function getLinks(): array
+    {
+        return [
+            'self' => route('jitera.users.show', $this),
         ];
     }
 }
