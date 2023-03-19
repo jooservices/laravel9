@@ -2,6 +2,7 @@
 
 namespace Modules\Jitera\Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,6 +17,6 @@ class JiteraDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        User::factory()->count(10)->create();
     }
 }
