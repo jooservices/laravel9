@@ -1,0 +1,11 @@
+{
+    "name": "Jitera",
+    "alias": "jitera",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Jitera\\Providers\\JiteraServiceProvider"
+    ],
+    "files": []
+}
