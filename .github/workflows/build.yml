@@ -39,3 +39,50 @@ jobs:
 
       - name: Lint
         run: composer ${{ matrix.lint }}
+
+  tests:
+    name: Execute UnitTest
+    strategy:
+      matrix:
+        test: [ Core, Jitera ]
+    runs-on:
+      - self-hosted
+      - ubuntu
+    needs: [ code_standards ]
+
+    services:
+      mysql:
+        image: mariadb:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: laravel
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup application
+        if: success()
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          composer install --no-ansi --no-scripts --no-progress --prefer-dist
+          php artisan key:generate
+          chmod -R 777 storage bootstrap/cache
+          php artisan config:clear
+          php artisan migrate:fresh
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        if: success()
+        run: |
+          ./vendor/bin/phpunit --testsuite=${{ matrix.test }} --coverage-clover coverage-${{ matrix.test }}.xml
+
+      - name: Coverage
+        uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: coverage-reports
+          path: coverage-${{ matrix.test }}.xml
