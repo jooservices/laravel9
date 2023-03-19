@@ -11,6 +11,8 @@
 |
 */
 
-Route::prefix('core')->group(function() {
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('core')->group(function () {
     Route::get('/', 'CoreController@index');
 });
