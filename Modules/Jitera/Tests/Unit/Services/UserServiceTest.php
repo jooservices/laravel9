@@ -67,7 +67,7 @@ class UserServiceTest extends TestCase
         });
     }
 
-    public function testSearchFollowings()
+    public function testSearchFollowers()
     {
         $service = app(UserService::class);
 
@@ -76,6 +76,6 @@ class UserServiceTest extends TestCase
 
         $service->follow($followerUser, $followedUser);
 
-        $this->assertTrue($service->searchFollowings($followerUser, 'John')->first()->is($followedUser));
+        $this->assertTrue($service->searchFollowers($followerUser, 'John')->first()->is($followedUser));
     }
 }

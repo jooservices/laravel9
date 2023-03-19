@@ -1,0 +1,15 @@
+parameters:
+    level: 0
+    paths:
+        - app
+        - Modules
+    inferPrivatePropertyTypeFromConstructor: true
+    checkMissingIterableValueType: true
+    excludePaths:
+        - */Tests/*
+        - */Database/*
+        - */Routes/*
+        - 'rector.php'
+        - 'app/Http/Middleware/CheckIfAdmin.php'
+
+    ignoreErrors:

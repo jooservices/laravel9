@@ -14,7 +14,6 @@ class UserService
         $followerUser->followings()->attach($followedUser);
 
         Event::dispatch(new FollowedUser($followerUser, $followedUser));
-
     }
 
     public function unfollow(User $followerUser, User $followedUser)
@@ -24,10 +23,9 @@ class UserService
         Event::dispatch(new UnfollowedUser($followerUser, $followedUser));
     }
 
-    public function searchFollowers(User $user, ?string $search = NULL)
+    public function searchFollowers(User $user, ?string $search = null)
     {
-        if ($search === NULL)
-        {
+        if ($search === null) {
             return $user->followings;
         }
 
