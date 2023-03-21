@@ -3,9 +3,12 @@
 namespace Modules\Jitera\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\Jitera\Http\Requests\Traits\HasFollower;
 
 class FollowUser extends FormRequest
 {
+    use HasFollower;
+
     /**
      * Get the validation rules that apply to the request.
      *
