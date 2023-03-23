@@ -1,0 +1,11 @@
+{
+    "name": "DesignPattern",
+    "alias": "designpattern",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DesignPattern\\Providers\\DesignPatternServiceProvider"
+    ],
+    "files": []
+}
