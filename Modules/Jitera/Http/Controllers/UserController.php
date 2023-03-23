@@ -3,6 +3,7 @@
 namespace Modules\Jitera\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Modules\Core\Http\Controllers\ApiController;
 use Modules\Jitera\Http\Requests\FollowUser;
 use Modules\Jitera\Http\Requests\GetFollowerUsers;
@@ -12,25 +13,21 @@ use Modules\Jitera\Transformers\UserResource;
 
 class UserController extends ApiController
 {
-    public function follow(FollowUser $request, User $user, UserService $userService)
+    public function follow(FollowUser $request, User $user, UserService $userService): JsonResponse
     {
-        $followerUser = User::find($request->follower_user_id);
-
-        $userService->follow($followerUser, $user);
+        $userService->follow($request->getFollowerUser(), $user);
 
         return $this->respondOk(UserResource::make($user));
     }
 
-    public function unfollow(UnfollowUser $request, User $user, UserService $userService)
+    public function unfollow(UnfollowUser $request, User $user, UserService $userService): JsonResponse
     {
-        $followerUser = User::find($request->follower_user_id);
-
-        $userService->unfollow($followerUser, $user);
+        $userService->unfollow($request->getFollowerUser(), $user);
 
         return $this->respondOk(UserResource::make($user));
     }
 
-    public function follows(GetFollowerUsers $request, User $user, UserService $userService)
+    public function follows(GetFollowerUsers $request, User $user, UserService $userService): JsonResponse
     {
         return $this->respondOk(
             UserResource::collection($userService->getFollowers($user, $request->input('name')))
