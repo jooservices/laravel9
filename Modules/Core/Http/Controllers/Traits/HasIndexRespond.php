@@ -2,6 +2,8 @@
 
 namespace Modules\Core\Http\Controllers\Traits;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+
 trait HasIndexRespond
 {
     protected function _respondIndex(LengthAwarePaginator $items, $itemsResource)
