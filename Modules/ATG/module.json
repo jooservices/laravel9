@@ -1,0 +1,11 @@
+{
+    "name": "ATG",
+    "alias": "atg",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ATG\\Providers\\ATGServiceProvider"
+    ],
+    "files": []
+}

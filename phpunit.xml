@@ -19,6 +19,10 @@
             <directory suffix="Test.php">./Modules/Jitera/Tests/Feature</directory>
             <directory suffix="Test.php">./Modules/Jitera/Tests/Unit</directory>
         </testsuite>
+        <testsuite name="ATG">
+            <directory suffix="Test.php">./Modules/ATG/Tests/Feature</directory>
+            <directory suffix="Test.php">./Modules/ATG/Tests/Unit</directory>
+        </testsuite>
 
     </testsuites>
     <coverage processUncoveredFiles="true">

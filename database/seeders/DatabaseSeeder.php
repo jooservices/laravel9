@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\ATG\Database\Seeders\ATGDatabaseSeeder;
 use Modules\Jitera\Database\Seeders\JiteraDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
 
             JiteraDatabaseSeeder::class,
+            ATGDatabaseSeeder::class
         ]);
     }
 }

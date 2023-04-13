@@ -1,5 +1,6 @@
 {
     "Jitera": true,
     "Core": true,
-    "DesignPattern": true
+    "DesignPattern": true,
+    "ATG": true
 }
