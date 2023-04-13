@@ -9,7 +9,7 @@ class OrderControllerTest extends TestCase
 {
     public function testCreateOrder()
     {
-        dd(json_decode($this->post(
+        $this->post(
             '/api/orders',
             [
                 'items' => [
@@ -18,6 +18,6 @@ class OrderControllerTest extends TestCase
 
                 ],
             ]
-        )->assertStatus(201)->getContent()));
+        )->assertStatus(201);
     }
 }
